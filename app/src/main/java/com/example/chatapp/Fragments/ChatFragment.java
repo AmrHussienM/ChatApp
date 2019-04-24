@@ -1,7 +1,5 @@
 package com.example.chatapp.Fragments;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -12,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.chatapp.Adapter.UserAdapter;
-import com.example.chatapp.Model.Msg;
+import com.example.chatapp.Model.Chatlist;
 import com.example.chatapp.Model.User;
 import com.example.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,7 +31,7 @@ public class ChatFragment extends Fragment {
     private FirebaseUser fUser;
     private UserAdapter adapter;
     private List<User> mUsers;
-    private List<String> usersList;
+    private List<Chatlist> usersList;
     private DatabaseReference reference;
     private LinearLayoutManager linearLayoutManager;
 
@@ -54,22 +52,19 @@ public class ChatFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         fUser= FirebaseAuth.getInstance().getCurrentUser();
-        usersList=new ArrayList<>();
-        reference= FirebaseDatabase.getInstance().getReference("Chats");
+        usersList=new ArrayList<Chatlist>();
+
+        reference=FirebaseDatabase.getInstance().getReference("Chatlist").child(fUser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usersList.clear();
                 for (DataSnapshot snapshot:dataSnapshot.getChildren()){
-                    Msg msg=snapshot.getValue(Msg.class);
-                    if (msg.getSender().equals(fUser.getUid())){
-                        usersList.add(msg.getReceiver());
-                    }
-                    if (msg.getReceiver().equals(fUser.getUid())){
-                        usersList.add(msg.getSender());
-                    }
+                    Chatlist chatlist=snapshot.getValue(Chatlist.class);
+                    usersList.add(chatlist);
+
                 }
-                readChats();
+                chatlist();
 
             }
 
@@ -79,9 +74,70 @@ public class ChatFragment extends Fragment {
             }
         });
 
+
+//Delete this also
+/*
+        reference= FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                usersList.clear();
+                for (DataSnapshot snapshot:dataSnapshot.getChildren()){
+                    Msg msg=snapshot.getValue(Msg.class);
+                    assert msg != null;
+                    if (msg.getSender().equals(fUser.getUid())){
+                        usersList.add(msg.getReceiver());
+                    }
+                    if (msg.getReceiver().equals(fUser.getUid())){
+                        usersList.add(msg.getSender());
+                    }
+                }
+
+
+                //readChats();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+*/
+
         return view;
     }
 
+    private void chatlist()
+    {
+        mUsers=new ArrayList<>();
+        reference=FirebaseDatabase.getInstance().getReference("Users");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mUsers.clear();
+                for (DataSnapshot snapshot:dataSnapshot.getChildren()){
+                    User user=snapshot.getValue(User.class);
+                    for (Chatlist chatlist:usersList){
+                        if (user.getId().equals(chatlist.getId())){
+                            mUsers.add(user);
+                        }
+                    }
+                }
+                adapter=new UserAdapter(mUsers, getActivity(),"online");
+                recyclerView.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+//Delete readChat Method...
+/*
     private void readChats()
     {
         mUsers=new ArrayList<>();
@@ -94,9 +150,10 @@ public class ChatFragment extends Fragment {
                 for (DataSnapshot snapshot:dataSnapshot.getChildren()){
                     User user=snapshot.getValue(User.class);
                     for (String id:usersList){
+                        assert user != null;
                         if (user.getId().equals(id)){
                             if (mUsers.size() != 0){
-                                for (User user1:mUsers){
+                                for (User user1 : mUsers){
                                     if (!user.getId().equals(user1.getId())){
                                         mUsers.add(user);
                                     }
@@ -119,6 +176,7 @@ public class ChatFragment extends Fragment {
         });
 
     }
+*/
 
 
 }

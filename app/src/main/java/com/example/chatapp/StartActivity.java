@@ -66,7 +66,8 @@ public class StartActivity extends AppCompatActivity {
                 if (user.getImageURL()==null){
                     profileImg.setImageResource(R.mipmap.ic_launcher);
                 }else {
-                    Glide.with(StartActivity.this).load(user.getImageURL()).into(profileImg);
+                    //change this
+                    Glide.with(getApplicationContext()).load(user.getImageURL()).into(profileImg);
 
                 }
 
