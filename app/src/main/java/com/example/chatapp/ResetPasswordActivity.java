@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.chatapp.Login.LoginActivity;
@@ -21,6 +22,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
     private Button resetbtn;
     private Toolbar toolbar;
     private FirebaseAuth mAuth;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
         sendEmail=findViewById(R.id.sendEmail);
         resetbtn=findViewById(R.id.resetBtn);
+        progressBar=findViewById(R.id.resetProgressBar);
         mAuth=FirebaseAuth.getInstance();
     }
 
@@ -55,6 +58,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         if (email.equals("")){
             Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
         }else {
+            progressBar.setVisibility(View.VISIBLE);
             mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -62,6 +66,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                         Toast.makeText(ResetPasswordActivity.this, "Please check your Email", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(ResetPasswordActivity.this, LoginActivity.class));
                     }else {
+                        progressBar.setVisibility(View.INVISIBLE);
                         String error=task.getException().getMessage();
                         Toast.makeText(ResetPasswordActivity.this, "Error: "+error, Toast.LENGTH_SHORT).show();
                     }
