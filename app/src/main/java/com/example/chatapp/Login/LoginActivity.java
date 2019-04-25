@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import com.example.chatapp.MainActivity;
 import com.example.chatapp.R;
 import com.example.chatapp.Register.RegisterActivity;
+import com.example.chatapp.ResetPasswordActivity;
 import com.example.chatapp.StartActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText email,password;
     private Button signInBtn;
-    private TextView dontHaveAnAccount;
+    private TextView forgotYourPassword;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
     private Toolbar toolbar;
@@ -41,17 +42,17 @@ public class LoginActivity extends AppCompatActivity {
 
         initialization();
 
-        dontHaveAnAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendUserToRegisterActivity();
-            }
-        });
-
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 verifyLogin();
+            }
+        });
+
+        forgotYourPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendUserToResetPasswordActivity();
             }
         });
     }
@@ -68,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
         email=findViewById(R.id.login_edit_email);
         password=findViewById(R.id.login_edit_password);
         signInBtn=findViewById(R.id.login_btn_signIn);
-        dontHaveAnAccount=findViewById(R.id.donthaveAnAccount);
+        forgotYourPassword=findViewById(R.id.forgotYourPassword);
         progressBar=findViewById(R.id.loginProgressBar);
     }
 
@@ -102,11 +103,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void sendUserToRegisterActivity()
+    private void sendUserToResetPasswordActivity()
     {
-        Intent registerIntent=new Intent(LoginActivity.this, RegisterActivity.class);
-        startActivity(registerIntent);
+        Intent resetIntent=new Intent(LoginActivity.this, ResetPasswordActivity.class);
+        startActivity(resetIntent);
     }
+
+
+
+
     private void sendUserToStartActivity()
     {
         Intent mainIntent=new Intent(LoginActivity.this, StartActivity.class);
